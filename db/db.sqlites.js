@@ -124,6 +124,21 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                console.log('create t_race_track_summaryFeatures success');
             }
         });  
+
+        db.run(`CREATE TABLE t_race_tracks_routeSimilarity (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            racename text, 
+            gpxfilename_base text,
+            gpxfilename_comparator text,
+            avg_track_distance real
+            )`,
+        (err) => {
+            if (err) {
+                // Table already created
+            }else{
+               console.log('create t_race_tracks_routeSimilarity success');
+            }
+        });  
     }
 });
 

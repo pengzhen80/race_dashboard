@@ -67,35 +67,7 @@ router.post("/getAllTracks/", (req, res, next) => {
                 console.log('starting' ,start);
                 //split length to 3
                 var length = filenames.length;
-                // var indexList = [[0,Math.floor(length/3)],[Math.floor(length/3),Math.floor(length*2/3)],[Math.floor(length*2/3),length-1]];
-                // var indexList = make_indexlist(length,10);
-                // function make_indexlist(total,divideNum)
-                // {
-                //     var indexlist = [];
-                //     for(var i=0;i<divideNum;i++)
-                //     {
-                //         indexlist.push([Math.floor(total/divideNum)*i,Math.floor(total/divideNum)*(i+1)]);
-                //     }
-                //     // indexlist.push([Math.floor(total/divideNum)*(divideNum-1),total]);
-                //     return indexlist;
-                // }
-                // console.log(indexList);
-                // let total_tracks_list = [];
-                // console.log('total_tracks_list',total_tracks_list.length);
-                // for(var i=0;i<indexList.length;i++)
-                // {
-                //     var tmp_filenames = null
-                //     if(i == indexList.length-1)
-                //     {
-                //         tmp_filenames = filenames.slice(indexList[i][0],-1);
-                //     }
-                //     else
-                //     {
-                //         tmp_filenames = filenames.slice(indexList[i][0],indexList[i][1]);
-                //     }
-                    
-                //     read_gpxDatasByFilenames_async(racename,tmp_filenames);
-                // }
+               
                 var tracks = read_gpxDatasByFilenames(racename,filenames);
                 tracks_filterByArrivingTime();
                 console.log(tracks.length,tracks[0]['data'].length);
