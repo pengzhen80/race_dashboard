@@ -21,7 +21,7 @@ router.post("/addrace", (req, res, next) => {
     const start = Date.now();
 
     let res_tracks = [];
-    model_race_rank.searchByRacename_rankLimit(body['racename'],21)
+    model_race_rank.searchByRacename_rankLimit(body['racename'],101)
     .then(rows =>{
         InitTrackDatas(rows);
         InitTrackRawData();
@@ -104,11 +104,11 @@ router.post("/searchrace", (req, res, next) =>
         return;
     }
     console.log(body['racename']);
-    model_race_track_summaryFeatures.searchrace(body['racename'])
+    model_race_tracks_routeSimilarity.searchrace(body['racename'])
     .then(rows => {
         res.json({
             'status':'ok',
-            'race_track_summaryFeatures':rows
+            'race_tracks_routeSimilarity':rows
         });
     })
     .catch(err=> {
