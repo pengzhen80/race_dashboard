@@ -136,7 +136,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             if (err) {
                 // Table already created
             }else{
-               console.log('create t_race_tracks_routeSimilarity success');
+               console.log('create t_race_track_sumt_race_tracks_routeSimilaritymaryFeatures success');
             }
         });  
     }

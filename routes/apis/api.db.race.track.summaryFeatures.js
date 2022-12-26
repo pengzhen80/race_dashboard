@@ -250,9 +250,25 @@ router.post("/searchrace", (req, res, next) =>
     console.log(body['racename']);
     model_race_track_summaryFeatures.searchrace(body['racename'])
     .then(rows => {
+        var normalize_row_list = [];
+        for(var i=0;i<rows.length;i++)
+        {
+            // {
+            //     "id": 5,
+            //     "racename": "唐山尼尔森赛鸽公棚-2022决赛",
+            //     "gpxfilename": "03-1899519",
+            //     "straightspeed": 48.152,
+            //     "realspeed": 50.619,
+            //     "realdistance": 550.088,
+            //     "avgelevation": 49.713,
+            //     "routeefficiency": 0.951
+            // },
+            delete rows[i]["id"];
+            normalize_row_list.push(rows[i]);
+        }
         res.json({
             'status':'ok',
-            'race_track_summaryFeatures':rows
+            'race_track_summaryFeatures':normalize_row_list
         });
     })
     .catch(err=> {
