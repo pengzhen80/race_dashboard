@@ -377,21 +377,16 @@ function track_make_withRaceEndpoint(raceinfo, tracks) {
         if (length < 1) {
             continue;
         }
+        var startPoint = turf.point([tracks[i]['data'][length - 1]['lon'], tracks[i]['data'][length - 1]['lat']]);
+        var endPoint = turf.point([raceinfo['end_lon'], raceinfo['end_lat']]);
         var fake_lastPoint = {
             'lon': raceinfo['end_lon'],
             'lat': raceinfo['end_lat'],
             'time': tracks[i]['arrivingtime'],
-            'distance': 0,
+            'distance': turf.distance(startPoint, endPoint) * 1000,
             'ele':tracks[i]['data'][length-1]['ele']
         };
-        //change the distance of lastPoint of track
-        var startPoint = turf.point([tracks[i]['data'][length - 1]['lon'], tracks[i]['data'][length - 1]['lat']]);
-        var endPoint = turf.point([raceinfo['end_lon'], raceinfo['end_lat']]);
-        tracks[i]['data'][length - 1]['distance'] = turf.distance(startPoint, endPoint) * 1000;
-        if(tracks[i]['name'] == '01-0226944')
-        {
-            console.log(tracks[i]['data'][length - 1]['distance']);
-        }
+       
 
         tracks[i]['data'].push(fake_lastPoint);
     }
