@@ -53,4 +53,14 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+//connect cloud db
+var pg_client = require("./db/db.cloud.local")
+pg_client.connect((err) => {
+  if (err) {
+    console.error('connection error', err.stack)
+  } else {
+    console.log('connected')
+  }
+})
+
 module.exports = app;
