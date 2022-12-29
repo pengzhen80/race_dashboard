@@ -1,23 +1,23 @@
 var express = require('express');
 var router = express.Router();
-var model_postgres_local_raceinfo = require('../../db/models.postgres.local/models.postgres.local.raceinfo');
+var model_postgres_local_racerank = require('../../db/models.postgres.local/models.postgres.local.race.rank');
 
-router.get("/allrace", (req, res, next) => {
-    var errors = [];
-    model_postgres_local_raceinfo.searchAllRace()
-        .then(rows => {
-            res.json({
-                'status': 'ok',
-                'allrace': rows
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.json({
-                'status': 'failed'
-            });
-        })
-});
+// router.get("/allrace", (req, res, next) => {
+//     var errors = [];
+//     model_postgres_local_raceinfo.searchAllRace()
+//         .then(rows => {
+//             res.json({
+//                 'status': 'ok',
+//                 'allrace': rows
+//             });
+//         })
+//         .catch(err => {
+//             console.log(err);
+//             res.json({
+//                 'status': 'failed'
+//             });
+//         })
+// });
 
 router.post("/searchrace", (req, res, next) => {
     var errors = [];
@@ -32,16 +32,16 @@ router.post("/searchrace", (req, res, next) => {
     }
     //get body
     const body = JSON.parse(req.body)
-    if (!body['racename']) {
-        errors.push("No racename specified");
+    if (!body['raceid']) {
+        errors.push("No raceid specified");
     }
     if (errors.length) {
         console.log(errors);
         res.status(400).json({ "error": errors.join(",") });
         return;
     }
-    console.log(body['racename']);
-    model_postgres_local_raceinfo.searchByRacename(body['racename'])
+    console.log(body['raceid']);
+    model_postgres_local_racerank.searchByRaceId(body['raceid'])
         .then(rows => {
             res.json({
                 'status': 'ok',

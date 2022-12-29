@@ -1,25 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var model_postgres_local_raceinfo = require('../../db/models.postgres.local/models.postgres.local.raceinfo');
+var model_postgres_local_raceTrackRawdata = require('../../db/models.postgres.local/models.postgres.local.race.track.rawdata');
 
-router.get("/allrace", (req, res, next) => {
-    var errors = [];
-    model_postgres_local_raceinfo.searchAllRace()
-        .then(rows => {
-            res.json({
-                'status': 'ok',
-                'allrace': rows
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.json({
-                'status': 'failed'
-            });
-        })
-});
-
-router.post("/searchrace", (req, res, next) => {
+router.post("/searchByRacerecordid", (req, res, next) => {
     var errors = [];
     // check content type
     try {
@@ -32,20 +15,20 @@ router.post("/searchrace", (req, res, next) => {
     }
     //get body
     const body = JSON.parse(req.body)
-    if (!body['racename']) {
-        errors.push("No racename specified");
+    if (!body['racerecordid']) {
+        errors.push("No racerecordid specified");
     }
     if (errors.length) {
         console.log(errors);
         res.status(400).json({ "error": errors.join(",") });
         return;
     }
-    console.log(body['racename']);
-    model_postgres_local_raceinfo.searchByRacename(body['racename'])
+    console.log(body['racerecordid']);
+    model_postgres_local_raceTrackRawdata.searchByRaceRecordId(body['racerecordid'])
         .then(rows => {
             res.json({
                 'status': 'ok',
-                'allrace': rows
+                'alltracks': rows
             });
         })
         .catch(err => {
