@@ -393,8 +393,45 @@ function track_make_withRaceEndpoint(raceinfo, tracks) {
     return tracks;
 }
 
+/////////////////format: param_name(param_type)
+//input
+//params:raceRecordSummary_list(list(object))
+//object:{straightdistance(real),straightspeed(real),realdistance(real),realspeed(real)}
+/////////////////
+//science_returnraceRecordSummary_list(list(object))
+//object:{straightdistance(real),straightspeed(real),realdistance(real),realspeed(real),routeefficiency(real)}
+
+function science_race_recordSummary_addRouteEfficiency(raceRecordSummary_list) {
+    //get totaldistance
+    var science_returnraceRecordSummary_list = [];
+    for(var i=0;i<raceRecordSummary_list.length;i++)
+    {
+        if(raceRecordSummary_list[i]['straightdistance']&&raceRecordSummary_list[i]['realdistance'])
+        {
+            if(raceRecordSummary_list[i]['realdistance'] != 0)
+            {
+                raceRecordSummary_list[i]['routeefficiency'] = raceRecordSummary_list[i]['straightdistance']/raceRecordSummary_list[i]['realdistance'];
+                science_returnraceRecordSummary_list.push(raceRecordSummary_list[i]);
+            }
+            else
+            {
+                raceRecordSummary_list[i]['routeefficiency'] = 0;
+                science_returnraceRecordSummary_list.push(raceRecordSummary_list[i]);
+            }
+        }
+        else
+        {
+            raceRecordSummary_list[i]['routeefficiency'] = 0;
+            science_returnraceRecordSummary_list.push(raceRecordSummary_list[i]);
+        }
+    }
+
+    return science_returnraceRecordSummary_list;
+}
+
 module.exports.splicer_straightAndRouteEff = splicer_straightAndRouteEff;
 module.exports.multiRoutes_routeSimilarity_allCombination = multiRoutes_routeSimilarity_allCombination;
 module.exports.multiRoutes_routeSimilarity_allCombination_returnAvgTrackDistance = multiRoutes_routeSimilarity_allCombination_returnAvgTrackDistance;
 module.exports.race_makeSummaryFeatures = race_makeSummaryFeatures;
 module.exports.track_make_withRaceEndpoint = track_make_withRaceEndpoint;
+module.exports.science_race_recordSummary_addRouteEfficiency = science_race_recordSummary_addRouteEfficiency;

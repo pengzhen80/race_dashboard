@@ -3,6 +3,7 @@ var router = express.Router();
 var model_race_rank = require('../../db/models_sqlites/models.sqlites.race.rank');
 var model_race_gpxfiles_rows = require('../../db/models_sqlites/models.sqlites.race.gpxfiles.rows');
 var model_race_tracks_routeSimilarity = require('../../db/models_sqlites/models.sqlites.race.tracks.routeSimilarity');
+var model_race_track_summaryfeatures= require('../../db/models_sqlites/models.sqlites.race.track.summaryFeatures');
 
 router.post("/addrace", (req, res, next) => {
     var errors=[];
@@ -106,10 +107,65 @@ router.post("/searchrace", (req, res, next) =>
     console.log(body['racename']);
     model_race_tracks_routeSimilarity.searchrace(body['racename'])
     .then(rows => {
-        res.json({
-            'status':'ok',
-            'race_tracks_routeSimilarity':rows
-        });
+        //get all track realspeed and rank 
+        var track_name_list = [];
+        for(var i=0;i<rows.length;i++)
+        {
+            var gpxfilename_base = rows[i]['gpxfilename_base'];
+            var gpxfilename_comparator = rows[i]['gpxfilename_comparator'];
+            if(!track_name_list.includes(gpxfilename_base))
+            {
+                track_name_list.push(gpxfilename_base);
+            }
+            if(!track_name_list.includes(gpxfilename_comparator))
+            {
+                track_name_list.push(gpxfilename_comparator);
+            }
+        }
+       
+        model_race_rank.searchByGpxfilenameList(track_name_list)
+        .then(rows_ranks=>{
+            model_race_track_summaryfeatures.searchByGpxfilenameList(track_name_list)
+            .then(rows_summary=>{
+                var res_trackInfo_list = [];
+                
+                for(var i=0;i<track_name_list.length;i++)
+                {
+                    var res_trackInfo = {};
+                    res_trackInfo['trackname'] = track_name_list[i];
+                    res_trackInfo['rank'] = rows_ranks[i][0]['rank'];
+                    res_trackInfo['realspeed'] = rows_summary[i][0]['realspeed'];
+                    res_trackInfo_list.push(res_trackInfo);
+                }
+                console.log(rows_ranks);
+                console.log(res_trackInfo_list);
+                res.json({
+                    'status':'ok',
+                    'trackinfo':res_trackInfo_list,
+                    'race_tracks_routeSimilarity':rows
+                });
+            })
+            .catch(err_summary=>{
+                console.log(err_summary);
+                res.json({
+                    'status':'fail',
+                    'message':err_summary
+                });
+            })
+        })
+        .catch(err_ranks=>{
+            console.log(err_ranks);
+            res.json({
+                'status':'fail',
+                'message':err_ranks
+            });
+        })
+        
+
+        // res.json({
+        //     'status':'ok',
+        //     'race_tracks_routeSimilarity':rows
+        // });
     })
     .catch(err=> {
         console.log(err);

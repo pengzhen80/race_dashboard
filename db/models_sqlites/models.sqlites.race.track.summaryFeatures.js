@@ -21,6 +21,44 @@ module.exports.searchrace = function (racename) {
 
 };
 
+function searchbyTrackName(track_name) {
+    console.log(track_name);
+    var sql = 'select * from t_race_track_summaryFeatures where gpxfilename = ?';
+    var params = [track_name];
+
+    return new Promise(function (resolve, reject) {
+        db.all(sql, params, (err,res) => {
+            // console.log(res,err);
+            if(err)
+            {
+                reject(err);
+            }
+            else
+            {
+                resolve(res);
+            }
+        });
+    });
+
+};
+
+module.exports.searchByGpxfilenameList = function(trackname_list) {
+    var functionList = [];
+    for(var i=0;i<trackname_list.length;i++)
+    {
+        functionList.push(searchbyTrackName(trackname_list[i]));
+    }
+    return new Promise(function(resolve,reject){
+        Promise.all(functionList)
+        .then(values=>{
+            resolve(values);
+        })
+        .catch(errs=>{
+            reject(errs);
+        });
+    })
+}
+
 module.exports.deleterace = function (racename) {
     console.log(racename);
     var sql = 'delete from t_race_track_summaryFeatures where racename = ?';
