@@ -27,3 +27,6 @@ code interduction:
 ./routes/api.js  : all apis route in here
 ./routes/apis all : api details in here
 ./routes/abandons : abandoned api in here
+
+postman's link:
+https://documenter.getpostman.com/view/24878317/2s8Z6u4Ev4#6e30f599-9b4a-46f9-9133-120853a84450
