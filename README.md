@@ -39,6 +39,7 @@ step1 : install postgresql locally
 step2 : create postgresql user : 'pengzhen' and password: 'pengzhen'
 step3 : create db 'cloudrace'
 step4 : restore cloudrace with the sqlfile in ./db/dbsource_public
+sqlite3 prepare by run server, db structure in 'race_dashboard-db design.drawio.png'
 run server
 step5 : npm install and start
 use postman to call api locally
