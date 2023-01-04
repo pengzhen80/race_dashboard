@@ -15,7 +15,7 @@ code interduction:
 ./core : functions to calculate science features of tracks
 ./db : 
 ./db/dbsoure_public : restore postsql db with this backup.
-./db/clients : three db clients
+./db/clients : three db clients , I hide the cloud client for safe.
 ./db/models_sqlites : models of sqlites : each tables' crud;
 ./db/models_postgres.cloud : models of cloud postgres : each tables' crud;
 ./db/models_postgres.local : models of local postgres : each tables' crud;
