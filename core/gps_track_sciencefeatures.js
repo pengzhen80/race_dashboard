@@ -269,7 +269,7 @@ function multiRoutes_routeSimilarity_allCombination_returnAvgTrackDistance(track
 /////////////////format: param_name(param_type)
 //input
 //params:raceinfo(object),tracks(list)
-//raceinfo:{'starttime'(string),'start_lon'(real),'start_lat'(real),'end_lon'(real),'end_lat'(real)}
+//raceinfo:{'racename'(string),'starttime'(string),'start_lon'(real),'start_lat'(real),'end_lon'(real),'end_lat'(real)}
 //tracks:list(object)
 //track object:{'name'(string),'data'(list(object)),'arrivingtime'(string)}
 //track data object:{'lon'(real),'lat'(real),'time'(string),'distance'(real),'ele'(real)}
@@ -290,6 +290,94 @@ function race_makeSummaryFeatures(raceinfo, tracks) {
         var rowForSummaryFeatures = {};
         rowForSummaryFeatures['racename'] = raceinfo['racename'];
         rowForSummaryFeatures['gpxfilename'] = tracks[i]['name'];
+        const [res_straightspeed, res_realspeed, res_realdistance, res_avgelevation, res_routeefficiency] = summaryFeatures(tracks[i]['arrivingtime'], tracks[i]['data']);
+        rowForSummaryFeatures['straightspeed'] = res_straightspeed;
+        rowForSummaryFeatures['realspeed'] = res_realspeed;
+        rowForSummaryFeatures['realdistance'] = res_realdistance;
+        rowForSummaryFeatures['avgelevation'] = res_avgelevation;
+        rowForSummaryFeatures['routeefficiency'] = res_routeefficiency;
+        rowForSummaryFeatures_list.push(rowForSummaryFeatures);
+    }
+
+    return rowForSummaryFeatures_list;
+
+    function summaryFeatures(arrivingtime, track) {
+        var res_straightspeed;
+        var res_realspeed;
+        var res_realdistance = 0;
+        var res_avgelevation;
+        var res_routeefficiency;
+        //get real total distance
+        var totalelevation = 0;
+        for (var i = 0; i < track.length; i++) {
+            var distance = (track[i]['distance'] / 1000);
+            res_realdistance += distance;
+            totalelevation += track[i]['ele'];
+        }
+        //get time
+        var endTime = new Date(arrivingtime);
+        var timeSpend = (endTime.getTime() - raceStartTime.getTime()) / (1000 * 3600);
+        //get straight speed
+        try {
+            res_straightspeed = race_totaldistance / timeSpend;
+        }
+        catch (err) {
+            console.log(err);
+            res_straightspeed = 0;
+        }
+        //get res_realspeed
+        try {
+            res_realspeed = res_realdistance / timeSpend;
+        }
+        catch (err) {
+            console.log(err);
+            res_realspeed = 0;
+        }
+        //get res_avgelevation
+        try {
+            res_avgelevation = totalelevation / track.length;
+        }
+        catch (err) {
+            console.log(err);
+            res_avgelevation = 0;
+        }
+        //get res_routeefficiency
+        try {
+            res_routeefficiency = race_totaldistance / res_realdistance;
+        }
+        catch (err) {
+            console.log(err);
+            res_routeefficiency = 0;
+        }
+        // console.log([res_straightspeed,res_realspeed,res_realdistance,res_avgelevation,res_routeefficiency]);
+        return [res_straightspeed.toFixed(3), res_realspeed.toFixed(3), res_realdistance.toFixed(3), res_avgelevation.toFixed(3), res_routeefficiency.toFixed(3)];
+    }
+}
+
+/////////////////format: param_name(param_type)
+//input
+//params:raceinfo(object),tracks(list)
+//raceinfo:{'raceid'(string),'starttime'(string),'start_lon'(real),'start_lat'(real),'end_lon'(real),'end_lat'(real)}
+//tracks:list(object)
+//track object:{'racerecordid'(string),'data'(list(object)),'arrivingtime'(string)}
+//track data object:{'lon'(real),'lat'(real),'time'(string),'distance'(real),'ele'(real)}
+/////////////////
+//return:rowForSummaryFeatures_list(list(object))
+//return:object:{'racename'(string),'gpxfilename'(string),'straightspeed'(real),'realspeed'(real),'realdistance'(real),'avgelevation'(real),'routeefficiency'(real)}
+function race_cloud_makeSummaryFeatures(raceinfo, tracks) {
+    //get totaldistance
+    const turf = require('@turf/turf');
+    var raceStartPoint = turf.point([raceinfo['start_lon'], raceinfo['start_lat']]);
+    var raceEndPoint = turf.point([raceinfo['end_lon'], raceinfo['end_lat']]);
+    var race_totaldistance = turf.distance(raceStartPoint, raceEndPoint);
+    var raceStartTime = new Date(raceinfo['starttime']);
+
+    //make track dashbaord by timesSlicer_list
+    let rowForSummaryFeatures_list = [];
+    for (var i = 0; i < tracks.length; i++) {
+        var rowForSummaryFeatures = {};
+        rowForSummaryFeatures['raceid'] = raceinfo['raceid'];
+        rowForSummaryFeatures['racerecordid'] = tracks[i]['racerecordid'];
         const [res_straightspeed, res_realspeed, res_realdistance, res_avgelevation, res_routeefficiency] = summaryFeatures(tracks[i]['arrivingtime'], tracks[i]['data']);
         rowForSummaryFeatures['straightspeed'] = res_straightspeed;
         rowForSummaryFeatures['realspeed'] = res_realspeed;
@@ -435,3 +523,4 @@ module.exports.multiRoutes_routeSimilarity_allCombination_returnAvgTrackDistance
 module.exports.race_makeSummaryFeatures = race_makeSummaryFeatures;
 module.exports.track_make_withRaceEndpoint = track_make_withRaceEndpoint;
 module.exports.science_race_recordSummary_addRouteEfficiency = science_race_recordSummary_addRouteEfficiency;
+module.exports.race_cloud_makeSummaryFeatures = race_cloud_makeSummaryFeatures;

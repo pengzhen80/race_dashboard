@@ -1,4 +1,4 @@
-var db = require("../db.sqlites")
+var db = require("../clients/db.sqlites")
 
 function searchByGpxfilename(trackname) {
     var sql = "SELECT count,lat,lon,ele,speed,distance,time,heading from t_race_gpxfiles_rows where gpxfilename =? ORDER by count;";

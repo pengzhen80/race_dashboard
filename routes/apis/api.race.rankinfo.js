@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var model_postgres_local_racerank = require('../../db/models.postgres.local/models.postgres.local.race.rank');
+var model_postgres_cloud_racerank = require('../../db/models.postgres.cloud/models.postgres.cloud.race.rank');
 
 // router.get("/allrace", (req, res, next) => {
 //     var errors = [];
@@ -41,7 +41,7 @@ router.post("/searchrace", (req, res, next) => {
         return;
     }
     console.log(body['raceid']);
-    model_postgres_local_racerank.searchByRaceId(body['raceid'])
+    model_postgres_cloud_racerank.searchByRaceId(body['raceid'])
         .then(rows => {
             res.json({
                 'status': 'ok',

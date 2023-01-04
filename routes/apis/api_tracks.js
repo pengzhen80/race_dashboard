@@ -1,7 +1,7 @@
 const { json } = require('express');
 var express = require('express');
 var router = express.Router();
-var db = require("../../db/db.sqlites")
+var db = require("../../db/clients/db.sqlites")
 
 // var bodyParser = require("body-parser");
 // router.use(bodyParser.urlencoded({ extended: false }));

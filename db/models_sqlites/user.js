@@ -1,4 +1,4 @@
-var db = require("../db.sqlites")
+var db = require("../clients/db.sqlites")
 
 //export createUser function
 module.exports.createUser = function createUser(newUser) {

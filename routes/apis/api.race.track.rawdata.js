@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var model_postgres_local_raceTrackRawdata = require('../../db/models.postgres.local/models.postgres.local.race.track.rawdata');
-var model_postgres_local_racerank = require('../../db/models.postgres.local/models.postgres.local.race.rank');
+var model_postgres_cloud_raceTrackRawdata = require('../../db/models.postgres.cloud/models.postgres.cloud.race.track.rawdata');
+var model_postgres_cloud_racerank = require('../../db/models.postgres.cloud/models.postgres.cloud.race.rank');
 
 router.post("/searchByRacerecordid", (req, res, next) => {
     var errors = [];
@@ -25,7 +25,7 @@ router.post("/searchByRacerecordid", (req, res, next) => {
         return;
     }
     console.log(body['racerecordid']);
-    model_postgres_local_raceTrackRawdata.searchByRaceRecordId(body['racerecordid'])
+    model_postgres_cloud_raceTrackRawdata.searchByRaceRecordId(body['racerecordid'])
         .then(rows => {
             res.json({
                 'status': 'ok',
@@ -64,14 +64,14 @@ router.post("/searchByRaceId", (req, res, next) => {
     }
     console.log(body['raceid']);
     //get all ranked racerecords
-    model_postgres_local_racerank.searchByRaceId(body['raceid'])
+    model_postgres_cloud_racerank.searchByRaceId_limitbyrank(body['raceid'],11)
         .then(rows => {
             var racerecordlist = [];
             for(var i=0;i<rows.length;i++)
             {
                 racerecordlist.push(rows[i]['racerecordid']);
             }
-            model_postgres_local_raceTrackRawdata.searchByRaceRecordIdList(racerecordlist)
+            model_postgres_cloud_raceTrackRawdata.searchByRaceRecordIdList(racerecordlist)
             .then(res_trackrawdata =>{
                 res.json({
                     'status': 'success',

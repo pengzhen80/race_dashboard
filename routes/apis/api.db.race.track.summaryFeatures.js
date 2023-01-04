@@ -2,7 +2,6 @@ const { json } = require('express');
 var express = require('express');
 const { OK } = require('sqlite3');
 var router = express.Router();
-var db = require("../../db/db.sqlites")
 var model_race_track_summaryFeatures = require('../../db/models_sqlites/models.sqlites.race.track.summaryFeatures');
 var model_race_rank = require('../../db/models_sqlites/models.sqlites.race.rank');
 var model_race_track_rawdata = require('../../db/models_sqlites/models.sqlites.race.gpxfiles.rows');

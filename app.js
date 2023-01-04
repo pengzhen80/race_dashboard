@@ -50,17 +50,26 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render('error');onlinemxcsk
 });
 
 //connect cloud db
-var pg_client = require("./db/db.cloud.local")
-pg_client.connect((err) => {
+var pg_cloud_client = require("./db/clients/db.cloud")
+pg_cloud_client.connect((err) => {
   if (err) {
     console.error('connection error', err.stack)
   } else {
     console.log('connected')
   }
 })
+
+// var pg_local_client = require("./db/clients/db.cloud.local")
+// pg_local_client.connect((err) => {
+//   if (err) {
+//     console.error('connection error', err.stack)
+//   } else {
+//     console.log('connected')
+//   }
+// })
 
 module.exports = app;

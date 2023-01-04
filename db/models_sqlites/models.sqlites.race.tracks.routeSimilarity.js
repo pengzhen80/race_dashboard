@@ -1,4 +1,4 @@
-var db = require("../db.sqlites")
+var db = require("../clients/db.sqlites")
 var coreFunctions = require("../../core/gps_track_sciencefeatures");
 
 /////////////////format: param_name(param_type)

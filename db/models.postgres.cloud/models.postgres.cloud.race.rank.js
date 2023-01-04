@@ -1,4 +1,4 @@
-var pg_client = require("../db.cloud.local")
+var pg_client = require("../clients/db.cloud")
 
 /////////////////format: param_name(param_type)
 //input
@@ -29,6 +29,25 @@ function model_make_racerank(rows)
 module.exports.searchByRaceId = function (raceId) {
     var sql = "select raceid,racerecordid,singleranking,arrivaltime from cloudracecertificate where raceid = $1 and singleranking IS NOT NULL and arrivaltime IS NOT NULL";
     var params = [raceId];
+
+    return new Promise(function (resolve, reject) {
+        pg_client.query(sql, params, (err,res) => {
+            if(err)
+            {
+                reject(err);
+            }
+            else
+            {
+                resolve(model_make_racerank(res['rows']));
+            }
+        });
+    });
+
+};
+
+module.exports.searchByRaceId_limitbyrank = function (raceId,rank) {
+    var sql = "select raceid,racerecordid,singleranking,arrivaltime from cloudracecertificate where raceid = $1 and singleranking < $2 and singleranking IS NOT NULL and arrivaltime IS NOT NULL";
+    var params = [raceId,rank];
 
     return new Promise(function (resolve, reject) {
         pg_client.query(sql, params, (err,res) => {

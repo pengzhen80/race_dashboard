@@ -1,4 +1,4 @@
-var db = require("../db.sqlites")
+var db = require("../clients/db.sqlites")
 
 module.exports.searchByRacename = function (racename) {
     var sql = 'select * from t_race_rank where racename = ?';

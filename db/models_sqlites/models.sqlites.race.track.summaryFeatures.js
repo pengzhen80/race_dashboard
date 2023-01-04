@@ -1,4 +1,4 @@
-var db = require("../db.sqlites")
+var db = require("../clients/db.sqlites")
 
 module.exports.searchrace = function (racename) {
     console.log(racename);

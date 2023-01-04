@@ -1,4 +1,4 @@
-var pg_client = require("../db.cloud.local")
+var pg_client = require("../clients/db.cloud")
 
 /////////////////format: param_name(param_type)
 //input

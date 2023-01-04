@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var model_postgres_local_raceinfo = require('../../db/models.postgres.local/models.postgres.local.raceinfo');
+var model_postgres_cloud_raceinfo = require('../../db/models.postgres.cloud/models.postgres.cloud.raceinfo');
 
 router.get("/allrace", (req, res, next) => {
     var errors = [];
-    model_postgres_local_raceinfo.searchAllRace()
+    model_postgres_cloud_raceinfo.searchAllRace()
         .then(rows => {
             res.json({
                 'status': 'ok',
