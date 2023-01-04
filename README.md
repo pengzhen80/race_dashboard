@@ -14,6 +14,7 @@ apis: raceinfo,race_rankinfo,race_record_summaryFeatures,race_record_rawdata.
 code interduction:
 ./core : functions to calculate science features of tracks
 ./db : 
+./db/dbsoure_public : restore postsql db with this backup.
 ./db/clients : three db clients
 ./db/models_sqlites : models of sqlites : each tables' crud;
 ./db/models_postgres.cloud : models of cloud postgres : each tables' crud;
@@ -30,3 +31,16 @@ code interduction:
 
 postman's link:
 https://documenter.getpostman.com/view/24878317/2s8Z6u4Ev4#6e30f599-9b4a-46f9-9133-120853a84450
+
+
+how to use:
+prepare postgresql db:
+step1 : install postgresql locally 
+step2 : create postgresql user : 'pengzhen' and password: 'pengzhen'
+step3 : create db 'cloudrace'
+step4 : restore cloudrace with the sqlfile in ./db/dbsource_public
+run server
+step5 : npm install and start
+use postman to call api locally
+step6 : install postman
+step7 : call api as the postman's link 
