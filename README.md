@@ -7,7 +7,7 @@ target : analyze pigeon track(gpx data) into features like speed,distance and so
 gpx data source: three ways : sqlite3,local postgresql db, cloud postgresql db;
 sqlite3 : read one race's gpx files and stored into sqlite3.
 local postgresql db : copy test cloud server's data into local postgressql db.
-cloud postgresql db : As the data of real db is too large cannot restored by backup-db, this way is  getting data from cloud db directly. 
+cloud postgresql db : As the data of real db is too large to be restored by backup-db, this way is  getting data from cloud db directly. 
 
 apis: raceinfo,race_rankinfo,race_record_summaryFeatures,race_record_rawdata.
 
