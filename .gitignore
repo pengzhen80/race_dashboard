@@ -105,6 +105,7 @@ dist
 
 #db
 db/dbsource/
+db/clients/db.cloud.js
 
 #tmp
 tmp/
