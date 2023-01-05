@@ -1,25 +1,25 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 // var bodyParser = require("body-parser");
 // var apiRouter_raceinfo = require("./abandons/api_raceinfo");
-var apiRouter_tracks = require("./apis/api_tracks");
+const apiRouterTracks = require('./apis/api_tracks');
 // var apiRouter_initdb_racedashboard = require("./apis/api.initdb.racedashboard");
-var api_db_race_track_summaryFeatures = require("./apis/api.db.race.track.summaryFeatures");
-var apiRouter_race_track_dashboard = require("./apis/api.race.track.dashboard");
-var apiRouter_race_tracks_routeSimilarity = require("./apis/api.race.tracks.routeSimilarity");
-var apiRoute_raceinfo = require("./apis/api.cloud.race.raceinfo");
-var apiRoute_racerank = require("./apis/api.cloud.race.rankinfo");
-var apiRoute_race_track_rawdata = require("./apis/api.cloud.race.track.rawdata");
-var apiRoute_race_record_sciencySummary = require("./apis/api.cloud.race.record.scienceSummary");
+const apiDbRaceTrackSummaryFeatures = require('./apis/api.db.race.track.summaryFeatures');
+const apiRouterRaceTrackDashboard = require('./apis/api.race.track.dashboard');
+const apiRouterRaceTracksRouteSimilarity = require('./apis/api.race.tracks.routeSimilarity');
+const apiRouteRaceinfo = require('./apis/api.cloud.race.raceinfo');
+const apiRouteRacerank = require('./apis/api.cloud.race.rankinfo');
+const apiRouteRaceTrackRawdata = require('./apis/api.cloud.race.track.rawdata');
+const apiRouteRaceRecordScienceSummary = require('./apis/api.cloud.race.record.scienceSummary');
 
-router.use('/tracks', apiRouter_tracks);
-router.use('/rack_track_dashboard', apiRouter_race_track_dashboard);
-router.use('/race_track_summaryFeatures', api_db_race_track_summaryFeatures);
-router.use('/race_tracks_routeSimilarity', apiRouter_race_tracks_routeSimilarity);
-router.use('/raceinfo', apiRoute_raceinfo);
-router.use('/racerank', apiRoute_racerank);
-router.use('/race_track_rawdata', apiRoute_race_track_rawdata);
-router.use('/race_track_sciencysummary', apiRoute_race_record_sciencySummary);
+router.use('/tracks', apiRouterTracks);
+router.use('/rack_track_dashboard', apiRouterRaceTrackDashboard);
+router.use('/race_track_summaryFeatures', apiDbRaceTrackSummaryFeatures);
+router.use('/race_tracks_routeSimilarity', apiRouterRaceTracksRouteSimilarity);
+router.use('/raceinfo', apiRouteRaceinfo);
+router.use('/racerank', apiRouteRacerank);
+router.use('/race_track_rawdata', apiRouteRaceTrackRawdata);
+router.use('/race_track_sciencysummary', apiRouteRaceRecordScienceSummary);
 
 module.exports = router;
