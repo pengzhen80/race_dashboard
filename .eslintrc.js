@@ -11,6 +11,7 @@ module.exports = {
     'ecmaVersion': 'latest',
   },
   'rules': {
+    'max-len': ["error", { "code": 400 }]
   },
   "plugins": [
     "jsdoc"
