@@ -10,7 +10,7 @@ var pg_client = require("../clients/db.cloud")
 //object:{"lat"(real),"lon"(real),"ele"(real),"speed"(real),"distance"(real),"time"(string),"heading"(real)}
 function model_make_race_track_rawdata(rows)
 {
-    console.log(rows.length);
+    // console.log(rows.length);
     var race_track_rawdata_list = [];
     for(var i=0;i<rows.length;i++)
     {
@@ -19,24 +19,6 @@ function model_make_race_track_rawdata(rows)
         track_rawdata['data'] = makeRawData(rows[i]['utc'],rows[i]['fix'],rows[i]['latitude'],rows[i]['longitude'],rows[i]['realdistance'],rows[i]['gpsheight'],rows[i]['gpsspeed'],rows[i]['direction'])
         function makeRawData(utc,fix,latitude,longitude,realdistance,gpsheight,gpsspeed,direction)
         {
-            // console.log(utc,typeof(utc),utc.length);
-            // try{
-            //     utc = JSON.parse("{" + utc + "}");
-            // }
-            // catch(err)
-            // {
-            //     console.log(err);
-            // }
-
-            // // console.log(utc);
-            // fix = JSON.parse("{" + fix + "}");
-            // latitude = JSON.parse("{" + latitude + "}");
-            // longitude = JSON.parse("{" + longitude + "}");
-            // realdistance = JSON.parse("{" + realdistance + "}");
-            // gpsheight = JSON.parse("{" + gpsheight + "}");
-            // gpsspeed = JSON.parse("{" + gpsspeed + "}");
-            // direction = JSON.parse("{" + direction + "}");
-            // console.log(fix.length,typeof(fix));
             var data_list = [];
             for(var i =0;i<fix.length;i++)
             {
@@ -80,13 +62,45 @@ function searchByRaceRecordId(raceRecordId) {
             else
             {
                 resolve(model_make_race_track_rawdata(res['rows']));
+                // resolve(res['rows']);
             }
         });
     });
 
 };
 
+function searchByRaceRecordIdList_optimize(raceRecordId_list) {
+    console.log('start prepare raw data');
+    var starttime = Date.now();
+    console.log(raceRecordId_list.length);
+    var params = [];
+    for(var i = 1; i <= raceRecordId_list.length; i++) {
+        params.push('$' + i);
+    }
+    console.log(params);
+
+    var sql = 'select racerecordid,utc,fix,latitude,longitude,cloudracetext.realdistance,gpsheight,gpsspeed,direction from cloudracetext where racerecordid IN (' + params.join(',') + ')';
+    console.log(sql);
+    return new Promise(function (resolve, reject) {
+        pg_client.query(sql, raceRecordId_list, (err,res) => {
+            if(err)
+            {
+                reject(err);
+            }
+            else
+            {
+                var endtime = Date.now();
+                console.log('data prepared',endtime.toString() - starttime.toString());
+                // resolve(model_make_race_track_rawdata(res['rows']));
+                resolve(model_make_race_track_rawdata(res['rows']));
+            }
+        });
+    });
+};
+
 function searchByRaceRecordIdList(raceRecordId_list) {
+    console.log('start prepare raw data');
+    var starttime = Date.now();
     var functionList = [];
     for(var i=0;i<raceRecordId_list.length;i++)
     {
@@ -96,6 +110,8 @@ function searchByRaceRecordIdList(raceRecordId_list) {
     return new Promise(function(resolve,reject){
         Promise.all(functionList)
         .then(values=>{
+            var endtime = Date.now();
+            console.log('data prepared',endtime.toString() - starttime.toString());
             resolve(values);
         })
         .catch(errs=>{
@@ -125,3 +141,4 @@ function searchByRaceRecordIdList(raceRecordId_list) {
 
 module.exports.searchByRaceRecordId =searchByRaceRecordId;
 module.exports.searchByRaceRecordIdList =searchByRaceRecordIdList;
+module.exports.searchByRaceRecordIdList_optimize = searchByRaceRecordIdList_optimize;

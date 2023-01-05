@@ -64,14 +64,15 @@ router.post("/searchByRaceId", (req, res, next) => {
     }
     console.log(body['raceid']);
     //get all ranked racerecords
-    model_postgres_cloud_racerank.searchByRaceId_limitbyrank(body['raceid'],11)
+    model_postgres_cloud_racerank.searchByRaceId_limitbyrank(body['raceid'],100)
         .then(rows => {
             var racerecordlist = [];
             for(var i=0;i<rows.length;i++)
             {
                 racerecordlist.push(rows[i]['racerecordid']);
             }
-            model_postgres_cloud_raceTrackRawdata.searchByRaceRecordIdList(racerecordlist)
+            console.log('racerecordlist : ',racerecordlist.length);
+            model_postgres_cloud_raceTrackRawdata.searchByRaceRecordIdList_optimize(racerecordlist)
             .then(res_trackrawdata =>{
                 res.json({
                     'status': 'success',

@@ -53,23 +53,4 @@ app.use(function(err, req, res, next) {
   res.render('error');onlinemxcsk
 });
 
-//connect cloud db
-var pg_cloud_client = require("./db/clients/db.cloud")
-pg_cloud_client.connect((err) => {
-  if (err) {
-    console.error('connection error', err.stack)
-  } else {
-    console.log('connected')
-  }
-})
-
-// var pg_local_client = require("./db/clients/db.cloud.local")
-// pg_local_client.connect((err) => {
-//   if (err) {
-//     console.error('connection error', err.stack)
-//   } else {
-//     console.log('connected')
-//   }
-// })
-
 module.exports = app;

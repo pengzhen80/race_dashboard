@@ -45,9 +45,10 @@ module.exports.searchByRaceId = function (raceId) {
 
 };
 
+
 module.exports.searchByRaceId_limitbyrank = function (raceId,rank) {
-    var sql = "select raceid,racerecordid,singleranking,arrivaltime from cloudracecertificate where raceid = $1 and singleranking < $2 and singleranking IS NOT NULL and arrivaltime IS NOT NULL";
-    var params = [raceId,rank];
+    var sql = "select raceid,racerecordid,singleranking,arrivaltime from cloudracecertificate where raceid = $1 and singleranking IS NOT NULL and arrivaltime IS NOT NULL";
+    var params = [raceId];
 
     return new Promise(function (resolve, reject) {
         pg_client.query(sql, params, (err,res) => {
@@ -57,29 +58,24 @@ module.exports.searchByRaceId_limitbyrank = function (raceId,rank) {
             }
             else
             {
-                resolve(model_make_racerank(res['rows']));
+                resolve(model_make_racerank(rows_filter_byrank(res['rows'],rank)));
             }
         });
     });
 
+    //cuase rank is string ,cannot use < to query, so filter by local function
+    function rows_filter_byrank(rows,rank)
+    {
+        var filtered_rows = [];
+        for(var i=0;i<rows.length;i++)
+        {
+            if(Number(rows[i]['singleranking'])<= rank)
+            {
+                filtered_rows.push(rows[i]);
+            }
+        }
+        return (filtered_rows);
+    }
 };
 
-// module.exports.searchAllRace = function () {
-//     var sql = 'select raceid,racetitle,starttime,releaseposition,arrivalposition from cloudrace where racetitle IS NOT NULL and starttime IS NOT NULL and releaseposition IS NOT NULL and arrivalposition IS NOT NULL';
-//     var params = [];
-
-//     return new Promise(function (resolve, reject) {
-//         pg_client.query(sql, params, (err,res) => {
-//             if(err)
-//             {
-//                 reject(err);
-//             }
-//             else
-//             {
-//                 resolve(model_make_raceinfo(res['rows']));
-//             }
-//         });
-//     });
-
-// };
 
