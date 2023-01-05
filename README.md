@@ -7,7 +7,7 @@ target : analyze pigeon track(gpx data) into features like speed,distance and so
 gpx data source: three ways : sqlite3,local postgresql db, cloud postgresql db;
 sqlite3 : read one race's gpx files and stored into sqlite3.
 local postgresql db : copy test cloud server's data into local postgressql db.
-cloud postgresql db : As the data of real db is too large cannot restored by backup-db, this way is  getting data from cloud db directly. 
+cloud postgresql db : As the data of real db is too large to be restored by backup-db, this way is  getting data from cloud db directly. 
 
 apis: raceinfo,race_rankinfo,race_record_summaryFeatures,race_record_rawdata.
 
@@ -15,7 +15,7 @@ code interduction:
 ./core : functions to calculate science features of tracks
 ./db : 
 ./db/dbsoure_public : restore postsql db with this backup.
-./db/clients : three db clients
+./db/clients : three db clients , I hide the cloud client for safe.
 ./db/models_sqlites : models of sqlites : each tables' crud;
 ./db/models_postgres.cloud : models of cloud postgres : each tables' crud;
 ./db/models_postgres.local : models of local postgres : each tables' crud;
@@ -39,6 +39,7 @@ step1 : install postgresql locally
 step2 : create postgresql user : 'pengzhen' and password: 'pengzhen'
 step3 : create db 'cloudrace'
 step4 : restore cloudrace with the sqlfile in ./db/dbsource_public
+sqlite3 prepare by run server, db structure in 'race_dashboard-db design.drawio.png'
 run server
 step5 : npm install and start
 use postman to call api locally
