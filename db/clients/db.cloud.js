@@ -9,5 +9,3 @@ const pg_cloud_client = new Pool(
         password: "",
     }
 );
-
-module.exports = pg_cloud_client
