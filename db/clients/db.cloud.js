@@ -1,6 +1,6 @@
-const { Client } = require('pg')
+const {Pool } = require('pg')
 
-const pg_cloud_client = new Client(
+const pg_cloud_client = new Pool(
     {
         database:"cloudrace",
         host: "skyracing.com.cn",
@@ -9,15 +9,5 @@ const pg_cloud_client = new Client(
         password: "",
     }
 );
-
-// const pg_cloud_client = new Client(
-//     {
-//         database:"cloudrace",
-//         host: "localhost",
-//         port: "5432",
-//         user: "pengzhen",
-//         password: "pengzhen",
-//     }
-// );
 
 module.exports = pg_cloud_client
