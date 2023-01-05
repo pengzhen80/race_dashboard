@@ -1,178 +1,173 @@
-var express = require('express');
-var router = express.Router();
-var model_race_rank = require('../../db/models_sqlites/models.sqlites.race.rank');
-var model_race_gpxfiles_rows = require('../../db/models_sqlites/models.sqlites.race.gpxfiles.rows');
-var model_race_tracks_routeSimilarity = require('../../db/models_sqlites/models.sqlites.race.tracks.routeSimilarity');
-var model_race_track_summaryfeatures= require('../../db/models_sqlites/models.sqlites.race.track.summaryFeatures');
+const express = require('express');
+const router = express.Router();
+const modelRaceRank = require('../../db/models_sqlites/models.sqlites.race.rank');
+const modelRaceGpxfilesRows = require('../../db/models_sqlites/models.sqlites.race.gpxfiles.rows');
+const modelRaceTracksRouteSimilarity = require('../../db/models_sqlites/models.sqlites.race.tracks.routeSimilarity');
+const modelRaceTrackSummaryfeatures= require('../../db/models_sqlites/models.sqlites.race.track.summaryFeatures');
 
-router.post("/addrace", (req, res, next) => {
-    var errors=[];
-    // console.log('req',req.params);
-    // console.log('Body: ', req.body,typeof(req.body));
-    // console.log('racename',req.body['racename']);
-    const body =  JSON.parse(req.body)
-    if (!body['racename']){
-        errors.push("No racename specified");
-    }
-    if (errors.length){
-        console.log(errors);
-        res.status(400).json({"error":errors.join(",")});
-        return;
-    }
-    const start = Date.now();
+router.post('/addrace', (req, res, next) => {
+  const errors=[];
+  // console.log('req',req.params);
+  // console.log('Body: ', req.body,typeof(req.body));
+  // console.log('racename',req.body['racename']);
+  const body = JSON.parse(req.body);
+  if (!body['racename']) {
+    errors.push('No racename specified');
+  }
+  if (errors.length) {
+    console.log(errors);
+    res.status(400).json({'error': errors.join(',')});
+    return;
+  }
+  const start = Date.now();
 
-    let res_tracks = [];
-    model_race_rank.searchByRacename_rankLimit(body['racename'],101)
-    .then(rows =>{
-        InitTrackDatas(rows);
-        InitTrackRawData();
-    })
-    .catch(errs=>{
+  const resTracks = [];
+  modelRaceRank.searchByRacename_rankLimit(body['racename'], 101)
+      .then((rows) =>{
+        initTrackDatas(rows);
+        initTrackRawData();
+      })
+      .catch((errs)=>{
         console.log(errs);
-    });
-    
-    function InitTrackDatas(rows)
-    {
-        for(var i=0;i<rows.length;i++)
-        // for(var i=0;i<2;i++)
-        {
-              var track = {};
-              track['name'] = rows[i]['gpxfilename'];
-              track['rank'] = rows[i]['rank'];
-              track['arrivingtime'] = rows[i]['arrivingtime'];
-              res_tracks.push(track);
+      });
+
+  /**
+   *
+   * @param {object[]}rows tracks' rank info
+   */
+  function initTrackDatas(rows) {
+    for (let i=0; i<rows.length; i++) {
+      const track = {};
+      track['name'] = rows[i]['gpxfilename'];
+      track['rank'] = rows[i]['rank'];
+      track['arrivingtime'] = rows[i]['arrivingtime'];
+      resTracks.push(track);
+    }
+  }
+
+  /**
+   *
+   */
+  function initTrackRawData() {
+    const trackNameList = [];
+    for (let i=0; i<resTracks.length; i++) {
+      trackNameList.push(resTracks[i]['name']);
+    }
+    modelRaceGpxfilesRows.searchByGpxfilenameList(trackNameList)
+        .then((values) => {
+          for (i=0; i<values.length; i++) {
+            resTracks[i]['data'] = values[i];
           }
-    }
 
-    function InitTrackRawData()
-    {
-        var trackName_list = [];
-        for(var i=0;i<res_tracks.length;i++)
-        {
-            trackName_list.push(res_tracks[i]['name']);
-        }
-        model_race_gpxfiles_rows.searchByGpxfilenameList(trackName_list)
-        .then(values => {
-            for(i=0;i<values.length;i++)
-            {
-                res_tracks[i]['data'] = values[i];
-            }
-
-            model_race_tracks_routeSimilarity.insertrace(body['racename'],res_tracks)
-            .then(rows => {
+          modelRaceTracksRouteSimilarity.insertrace(body['racename'], resTracks)
+              .then((rows) => {
                 const end = Date.now();
-                console.log('time need(s):' ,(end-start)/1000);
+                console.log('time need(s):', (end-start)/1000);
                 res.json({
-                    'status':'ok',
+                  'status': 'ok',
                 });
-            })
-            .catch(errs => {
+              })
+              .catch((errs) => {
                 const end = Date.now();
-                console.log('time need(s):' ,(end-start)/1000);
+                console.log('time need(s):', (end-start)/1000);
                 res.json({
-                    'status':'fail',
-                    'message':errs
+                  'status': 'fail',
+                  'message': errs,
                 });
-            });    
+              });
         })
-        .catch(errs => {
-            console.log(errs);
+        .catch((errs) => {
+          console.log(errs);
         });
-    }
+  }
 });
 
-router.post("/searchrace", (req, res, next) =>
-{
-    var errors=[];
-    //check content type
-    try{
-        JSON.parse(req.body);
-    }catch(err)
-    {
-        console.log("can not parser body");
-        res.json({
-           "message":"wrong content type",
-        })
-    }
-    //get body
-    const body =  JSON.parse(req.body)
-    if (!body['racename']){
-        errors.push("No racename specified");
-    }
-    if (errors.length){
-        console.log(errors);
-        res.status(400).json({"error":errors.join(",")});
-        return;
-    }
-    console.log(body['racename']);
-    model_race_tracks_routeSimilarity.searchrace(body['racename'])
-    .then(rows => {
-        //get all track realspeed and rank 
-        var track_name_list = [];
-        for(var i=0;i<rows.length;i++)
-        {
-            var gpxfilename_base = rows[i]['gpxfilename_base'];
-            var gpxfilename_comparator = rows[i]['gpxfilename_comparator'];
-            if(!track_name_list.includes(gpxfilename_base))
-            {
-                track_name_list.push(gpxfilename_base);
-            }
-            if(!track_name_list.includes(gpxfilename_comparator))
-            {
-                track_name_list.push(gpxfilename_comparator);
-            }
+router.post('/searchrace', (req, res, next) => {
+  const errors=[];
+  // check content type
+  try {
+    JSON.parse(req.body);
+  } catch (err) {
+    console.log('can not parser body');
+    res.json({
+      'message': 'wrong content type',
+    });
+  }
+  // get body
+  const body = JSON.parse(req.body);
+  if (!body['racename']) {
+    errors.push('No racename specified');
+  }
+  if (errors.length) {
+    console.log(errors);
+    res.status(400).json({'error': errors.join(',')});
+    return;
+  }
+  console.log(body['racename']);
+  modelRaceTracksRouteSimilarity.searchrace(body['racename'])
+      .then((rows) => {
+        // get all track realspeed and rank
+        const trackNameList = [];
+        for (let i=0; i<rows.length; i++) {
+          const gpxfilenameBase = rows[i]['gpxfilenameBase'];
+          const gpxfilenameComparator = rows[i]['gpxfilenameComparator'];
+          if (!trackNameList.includes(gpxfilenameBase)) {
+            trackNameList.push(gpxfilenameBase);
+          }
+          if (!trackNameList.includes(gpxfilenameComparator)) {
+            trackNameList.push(gpxfilenameComparator);
+          }
         }
-       
-        model_race_rank.searchByGpxfilenameList(track_name_list)
-        .then(rows_ranks=>{
-            model_race_track_summaryfeatures.searchByGpxfilenameList(track_name_list)
-            .then(rows_summary=>{
-                var res_trackInfo_list = [];
-                
-                for(var i=0;i<track_name_list.length;i++)
-                {
-                    var res_trackInfo = {};
-                    res_trackInfo['trackname'] = track_name_list[i];
-                    res_trackInfo['rank'] = rows_ranks[i][0]['rank'];
-                    res_trackInfo['realspeed'] = rows_summary[i][0]['realspeed'];
-                    res_trackInfo_list.push(res_trackInfo);
-                }
-                console.log(rows_ranks);
-                console.log(res_trackInfo_list);
-                res.json({
-                    'status':'ok',
-                    'trackinfo':res_trackInfo_list,
-                    'race_tracks_routeSimilarity':rows
-                });
+
+        modelRaceRank.searchByGpxfilenameList(trackNameList)
+            .then((rowsRanks)=>{
+              modelRaceTrackSummaryfeatures.searchByGpxfilenameList(trackNameList)
+                  .then((rowsSummary)=>{
+                    const resTrackInfoList = [];
+
+                    for (let i=0; i<trackNameList.length; i++) {
+                      const resTrackInfo = {};
+                      resTrackInfo['trackname'] = trackNameList[i];
+                      resTrackInfo['rank'] = rowsRanks[i][0]['rank'];
+                      resTrackInfo['realspeed'] = rowsSummary[i][0]['realspeed'];
+                      resTrackInfoList.push(resTrackInfo);
+                    }
+                    console.log(rowsRanks);
+                    console.log(resTrackInfoList);
+                    res.json({
+                      'status': 'ok',
+                      'trackinfo': resTrackInfoList,
+                      'race_tracks_routeSimilarity': rows,
+                    });
+                  })
+                  .catch((errSummary)=>{
+                    console.log(errSummary);
+                    res.json({
+                      'status': 'fail',
+                      'message': errSummary,
+                    });
+                  });
             })
-            .catch(err_summary=>{
-                console.log(err_summary);
-                res.json({
-                    'status':'fail',
-                    'message':err_summary
-                });
-            })
-        })
-        .catch(err_ranks=>{
-            console.log(err_ranks);
-            res.json({
-                'status':'fail',
-                'message':err_ranks
+            .catch((errRanks)=>{
+              console.log(errRanks);
+              res.json({
+                'status': 'fail',
+                'message': errRanks,
+              });
             });
-        })
-        
+
 
         // res.json({
         //     'status':'ok',
         //     'race_tracks_routeSimilarity':rows
         // });
-    })
-    .catch(err=> {
+      })
+      .catch((err)=> {
         console.log(err);
         res.json({
-            'status':'failed'
+          'status': 'failed',
         });
-    })
+      });
 });
 
 module.exports = router;

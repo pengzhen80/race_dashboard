@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const model_race_track_summaryFeatures = require('../../db/models_sqlites/models.sqlites.race.track.summaryFeatures');
-const model_race_rank = require('../../db/models_sqlites/models.sqlites.race.rank');
-const model_race_track_rawdata = require('../../db/models_sqlites/models.sqlites.race.gpxfiles.rows');
-const model_race_info = require('../../db/models_sqlites/models.sqlites.race.info');
+const modelRaceTrackSummaryFeatures = require('../../db/models_sqlites/models.sqlites.race.track.summaryFeatures');
+const modelRaceRank = require('../../db/models_sqlites/models.sqlites.race.rank');
+const modelRaceTrackRawdata = require('../../db/models_sqlites/models.sqlites.race.gpxfiles.rows');
+const modelRaceInfo = require('../../db/models_sqlites/models.sqlites.race.info');
 const coreFunctions = require('../../core/gps_track_sciencefeatures');
 
 router.post('/searchrace', (req, res, next) => {
@@ -28,7 +28,7 @@ router.post('/searchrace', (req, res, next) => {
     return;
   }
   console.log(body['racename']);
-  model_race_track_summaryFeatures.searchrace(body['racename'])
+  modelRaceTrackSummaryFeatures.searchrace(body['racename'])
       .then((rows) => {
         // var normalize_row_list = [];
         // for (var i = 0; i < rows.length; i++) {
@@ -80,7 +80,7 @@ router.post('/deleterace', (req, res, next) => {
     return;
   }
   console.log(body['racename']);
-  model_race_track_summaryFeatures.deleterace(body['racename'])
+  modelRaceTrackSummaryFeatures.deleterace(body['racename'])
       .then((rows) => {
         res.json({
           'status': 'success',
@@ -111,58 +111,56 @@ router.post('/addrace', (req, res, next) => {
   const start = Date.now();
   console.log('starting', start);
 
-  let res_tracks = [];
-  model_race_rank.searchByRacename(body['racename']).then((rows) => {
+  let resTracks = [];
+  modelRaceRank.searchByRacename(body['racename']).then((rows) => {
     // make tracks
-    InitTrackDatas(rows);
-    InitTrackRawData();
+    initTrackDatas(rows);
+    initTrackRawData();
   }).catch((err) => {
     console.log(err);
   });
 
   /**
    *
-   * @param rows
+   * @param {object[]}rows
    */
-  function InitTrackDatas(rows) {
-    for (let i = 0; i < rows.length; i++)
-    // for(var i=0;i<2;i++)
-    {
+  function initTrackDatas(rows) {
+    for (let i = 0; i < rows.length; i++) {
       const track = {};
       track['name'] = rows[i]['gpxfilename'];
       track['rank'] = rows[i]['rank'];
       track['arrivingtime'] = rows[i]['arrivingtime'];
-      res_tracks.push(track);
+      resTracks.push(track);
     }
   }
 
   /**
    *
    */
-  function InitTrackRawData() {
-    const track_name_list = [];
-    for (var i = 0; i < res_tracks.length; i++) {
-      track_name_list.push(res_tracks[i]['name']);
+  function initTrackRawData() {
+    const trackNameList = [];
+    for (let i = 0; i < resTracks.length; i++) {
+      trackNameList.push(resTracks[i]['name']);
     }
-    model_race_track_rawdata.searchByGpxfilenameList(track_name_list).
-        then((rows_rawdata) => {
-          for (i = 0; i < rows_rawdata.length; i++) {
-            res_tracks[i]['data'] = rows_rawdata[i];
+    modelRaceTrackRawdata.searchByGpxfilenameList(trackNameList).
+        then((rowsRawdata) => {
+          for (i = 0; i < rowsRawdata.length; i++) {
+            resTracks[i]['data'] = rowsRawdata[i];
           }
-          model_race_info.searchByRacename(body['racename'])
+          modelRaceInfo.searchByRacename(body['racename'])
               .then((rows) =>{
                 const raceinfo = rows[0];
-                res_tracks = coreFunctions.track_make_withRaceEndpoint(raceinfo, res_tracks);
-                model_race_track_summaryFeatures.addrace(raceinfo, res_tracks)
-                    .then((res_summary) =>{
+                resTracks = coreFunctions.track_make_withRaceEndpoint(raceinfo, resTracks);
+                modelRaceTrackSummaryFeatures.addrace(raceinfo, resTracks)
+                    .then((resSummary) =>{
                       res.json({
                         'message': 'success',
                       });
                     })
-                    .catch((err_summary) =>{
+                    .catch((errSummary) =>{
                       res.json({
                         'message': 'fail',
-                        'error': err_summary,
+                        'error': errSummary,
                       });
                     });
               })
