@@ -18,5 +18,10 @@
     "morgan": "~1.9.1",
     "pg": "^8.8.0",
     "sqlite3": "^5.1.4"
+  },
+  "devDependencies": {
+    "eslint": "^8.31.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-jsdoc": "^39.6.4"
   }
 }

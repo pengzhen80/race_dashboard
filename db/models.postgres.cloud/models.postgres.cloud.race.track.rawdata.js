@@ -72,15 +72,15 @@ function searchByRaceRecordId(raceRecordId) {
 function searchByRaceRecordIdList_optimize(raceRecordId_list) {
     console.log('start prepare raw data');
     var starttime = Date.now();
-    console.log(raceRecordId_list.length);
+    // console.log(raceRecordId_list.length);
     var params = [];
     for(var i = 1; i <= raceRecordId_list.length; i++) {
         params.push('$' + i);
     }
-    console.log(params);
+    // console.log(params);
 
     var sql = 'select racerecordid,utc,fix,latitude,longitude,cloudracetext.realdistance,gpsheight,gpsspeed,direction from cloudracetext where racerecordid IN (' + params.join(',') + ')';
-    console.log(sql);
+    // console.log(sql);
     return new Promise(function (resolve, reject) {
         pg_client.query(sql, raceRecordId_list, (err,res) => {
             if(err)

@@ -1,42 +1,42 @@
-var express = require('express');
-var router = express.Router();
-var model_postgres_cloud_race_reacordSummary = require('../../db/models.postgres.cloud/models.postgres.cloud.race.record.summaryFeatures');
+const express = require('express');
+const router = express.Router();
+const modelPostgresCloudRaceRecordSummary = require('../../db/models.postgres.cloud/models.postgres.cloud.race.record.summaryFeatures');
 
-router.post("/searchrace", (req, res, next) => {
-    var errors = [];
-    //check content type
-    try {
-        JSON.parse(req.body);
-    } catch (err) {
-        console.log("can not parser body");
+router.post('/searchrace', (req, res, next) => {
+  const errors = [];
+  // check content type
+  try {
+    JSON.parse(req.body);
+  } catch (err) {
+    console.log('can not parser body');
+    res.json({
+      'message': 'wrong content type',
+    });
+  }
+  // get body
+  const body = JSON.parse(req.body);
+  if (!body['raceid']) {
+    errors.push('No raceid specified');
+  }
+  if (errors.length) {
+    console.log(errors);
+    res.status(400).json({'error': errors.join(',')});
+    return;
+  }
+  console.log(body['raceid']);
+  modelPostgresCloudRaceRecordSummary.searchrace(body['raceid'])
+      .then((rows) => {
         res.json({
-            "message": "wrong content type",
-        })
-    }
-    //get body
-    const body = JSON.parse(req.body)
-    if (!body['raceid']) {
-        errors.push("No raceid specified");
-    }
-    if (errors.length) {
-        console.log(errors);
-        res.status(400).json({ "error": errors.join(",") });
-        return;
-    }
-    console.log(body['raceid']);
-    model_postgres_cloud_race_reacordSummary.searchrace(body['raceid'])
-        .then(rows => {
-            res.json({
-                'status': 'ok',
-                'racerecord_sciencesummary': rows
-            });
-        })
-        .catch(err => {
-            console.log(err);
-            res.json({
-                'status': 'failed'
-            });
-        })
+          'status': 'ok',
+          'racerecord_sciencesummary': rows,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.json({
+          'status': 'failed',
+        });
+      });
 });
 
 // router.post("/addrace", (req, res, next) => {
@@ -82,7 +82,7 @@ router.post("/searchrace", (req, res, next) => {
 //         }
 //         model_race_track_rawdata.searchByGpxfilenameList(track_name_list).
 //             then(rows_rawdata => {
-//                 for (i = 0; i < rows_rawdata.length; i++) 
+//                 for (i = 0; i < rows_rawdata.length; i++)
 //                 {
 //                     res_tracks[i]['data'] = rows_rawdata[i];
 //                 }
@@ -106,7 +106,7 @@ router.post("/searchrace", (req, res, next) => {
 //                 .catch(errs=>{
 //                     console.log(errs);
 //                 })
-                         
+
 //             }).
 //             catch(err => {
 //                 console.log(err);
