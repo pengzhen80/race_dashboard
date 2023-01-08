@@ -2,7 +2,7 @@ var sqlite3 = require('sqlite3').verbose()
 // var md5 = require('md5')
 // const fs = require('fs');
 
-const DBSOURCE = "db/dbsource/db.sqlite"
+const DBSOURCE = "db/dbsource_public/db.sqlite"
 
 let db = new sqlite3.Database(DBSOURCE, (err) => {
     if (err) {
