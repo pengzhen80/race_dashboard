@@ -1,6 +1,7 @@
 # race_dashboard
 server frame : node.js,express;
 db: sqlite3,postgresql;
+code style: google code style , eslint checked
 
 target : analyze pigeon track(gpx data) into features like speed,distance and so on;
 
@@ -29,19 +30,16 @@ code interduction:
 ./routes/apis all : api details in here
 ./routes/abandons : abandoned api in here
 
-postman's link:
-https://documenter.getpostman.com/view/24878317/2s8Z6u4Ev4#6e30f599-9b4a-46f9-9133-120853a84450
-
-
 how to use:
 prepare postgresql db:
-step1 : install postgresql locally 
-step2 : create postgresql user : 'pengzhen' and password: 'pengzhen'
+step1 : install postgresql
 step3 : create db 'cloudrace'
-step4 : restore cloudrace with the sqlfile in ./db/dbsource_public
-sqlite3 prepare by run server, db structure in 'race_dashboard-db design.drawio.png'
+step4 : restore cloudrace with the sqlfile in ./db/dbsource_public/cloudrace.sql
+sqlite3 prepared by run server, db structure in 'race_dashboard-db design.drawio.png'
 run server
-step5 : npm install and start
+step5 : npm i & start
 use postman to call api locally
 step6 : install postman
 step7 : call api as the postman's link 
+postman's link:
+https://documenter.getpostman.com/view/24878317/2s8Z6u4Ev4#6e30f599-9b4a-46f9-9133-120853a84450
