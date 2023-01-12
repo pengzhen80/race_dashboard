@@ -12,6 +12,8 @@ const apiRouteRaceinfo = require('./apis/api.cloud.race.raceinfo');
 const apiRouteRacerank = require('./apis/api.cloud.race.rankinfo');
 const apiRouteRaceTrackRawdata = require('./apis/api.cloud.race.track.rawdata');
 const apiRouteRaceRecordScienceSummary = require('./apis/api.cloud.race.record.scienceSummary');
+const apiLocalRouteRaceRecordSlicer = require('./apis/api.local.race.record.slicer');
+
 
 router.use('/tracks', apiRouterTracks);
 router.use('/rack_track_dashboard', apiRouterRaceTrackDashboard);
@@ -21,5 +23,6 @@ router.use('/raceinfo', apiRouteRaceinfo);
 router.use('/racerank', apiRouteRacerank);
 router.use('/race_track_rawdata', apiRouteRaceTrackRawdata);
 router.use('/race_track_sciencysummary', apiRouteRaceRecordScienceSummary);
+router.use('/race_track_slicer', apiLocalRouteRaceRecordSlicer);
 
 module.exports = router;

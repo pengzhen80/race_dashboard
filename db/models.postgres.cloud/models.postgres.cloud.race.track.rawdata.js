@@ -27,7 +27,11 @@ function modelMakeRaceTrackRawdata(rows) {
     function makeRawData(utc, fix, latitude, longitude, realdistance, gpsheight, gpsspeed, direction) {
       const dataList = [];
       for (let i =0; i<fix.length; i++) {
-        // console.log(fix[i]);
+        // 從雲端資料庫的查詢結果來看，raceinfo中的starttime是北京時間，而軌跡的text的時間是utc時間；
+        // 如果對查詢結果的時間不進行手動轉換，會導致時間錯誤，使用js讀取的時候，會自動轉換成utc時間；
+        // 做法是把text中的時間+8個小時，就變成了正常的utc時間；
+        utc[i].setHours(utc[i].getHours() + 8);
+        console.log(utc[i]);
         const cell = {};
         if (fix[i]!='2D'&&fix[i]!='3D') {
           continue;

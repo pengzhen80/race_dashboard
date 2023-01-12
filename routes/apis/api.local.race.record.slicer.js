@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const modelPostgresCloudRaceTrackRawdata = require('../../db/models.postgres.cloud/models.postgres.cloud.race.track.rawdata');
+const modelPostgresLocalRaceRecordSlicer = require('../../db/models.postgres.local/models.postgres.local.race.record.slicer');
 const modelPostgresCloudRacerank = require('../../db/models.postgres.cloud/models.postgres.cloud.race.rank');
-
-router.post('/searchByRacerecordid', (req, res, next) => {
+const modelPostgresCloudRaceTrackRawdata = require('../../db/models.postgres.cloud/models.postgres.cloud.race.track.rawdata');
+const modelPostgresCloudRaceinfo = require('../../db/models.postgres.cloud/models.postgres.cloud.raceinfo');
+router.post('/searchrace', (req, res, next) => {
   const errors = [];
   // check content type
   try {
@@ -16,20 +17,20 @@ router.post('/searchByRacerecordid', (req, res, next) => {
   }
   // get body
   const body = JSON.parse(req.body);
-  if (!body['racerecordid']) {
-    errors.push('No racerecordid specified');
+  if (!body['raceid']) {
+    errors.push('No raceid specified');
   }
   if (errors.length) {
     console.log(errors);
     res.status(400).json({'error': errors.join(',')});
     return;
   }
-  console.log(body['racerecordid']);
-  modelPostgresCloudRaceTrackRawdata.searchByRaceRecordId(body['racerecordid'])
+  console.log(body['raceid']);
+  modelPostgresLocalRaceRecordSlicer.searchrace(body['raceid'])
       .then((rows) => {
         res.json({
           'status': 'ok',
-          'trackrawdata': rows,
+          'racerecordslicer': rows,
         });
       })
       .catch((err) => {
@@ -40,8 +41,7 @@ router.post('/searchByRacerecordid', (req, res, next) => {
       });
 });
 
-
-router.post('/searchByRaceId', (req, res, next) => {
+router.post('/addrace', (req, res, next) => {
   const errors = [];
   // check content type
   try {
@@ -64,7 +64,7 @@ router.post('/searchByRaceId', (req, res, next) => {
   }
   console.log(body['raceid']);
   // get all ranked racerecords
-  modelPostgresCloudRacerank.searchByRaceId_limitbyrank(body['raceid'], 100)
+  modelPostgresCloudRacerank.searchByRaceId_limitbyrank(body['raceid'],100)
       .then((rows) => {
         const racerecordlist = [];
         for (let i=0; i<rows.length; i++) {
@@ -74,12 +74,17 @@ router.post('/searchByRaceId', (req, res, next) => {
         modelPostgresCloudRaceTrackRawdata.searchByRaceRecordIdListOptimize(racerecordlist)
             .then((resTrackrawdata) =>{
               console.log(typeof(resTrackrawdata));
-              res.json({
-                'status': 'success',
-                'message':resTrackrawdata,
-              });
-              // res.send(JSON.stringify(resTrackrawdata));
-            })
+              modelPostgresCloudRaceinfo.searchByRaceId(body['raceid'])
+                  .then((rowsRaceinfo) => {
+                    modelPostgresLocalRaceRecordSlicer.addrace(body['raceid'],rowsRaceinfo,resTrackrawdata,10);
+                  })
+                  .catch((errRaceInfo) => {
+                    console.log(errRaceInfo);
+                    res.json({
+                      'status': 'failed',
+                    });
+                  });
+                })
             .catch((errTrackrawdata) =>{
               console.log(errTrackrawdata);
               res.json({

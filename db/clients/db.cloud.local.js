@@ -2,7 +2,7 @@ const {Pool} = require('pg');
 
 const pgLocalClient = new Pool(
     {
-      database: 'cloudrace',
+      database: 'localrace',
       host: 'localhost',
       port: '5432',
       user: 'pengzhen',
