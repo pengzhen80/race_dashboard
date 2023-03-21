@@ -1,6 +1,5 @@
 const pgClient = require('../clients/db.cloud.local');
 const coreFunctions = require('../../core/gps_track_sciencefeatures');
-const strftime = require('strftime')
 const { v4: uuidv4 } = require('uuid');
 // var hashlib = require("hashlib");
 

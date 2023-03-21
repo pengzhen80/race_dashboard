@@ -6,23 +6,24 @@ const pgClient = require('../clients/db.cloud');
  * @return {object[]} object{'raceid'(string),'racerecordid'(string),'rank'(number),'arrivingtime'(string)}
  */
 function modelMakeRacerank(rows) {
-  // console.log(rows,typeof(rows[0]['starttime']));
+  console.log(typeof(rows[0]['orgring']),rows[0]['orgring']);
   const racerankList = [];
   for (let i=0; i<rows.length; i++) {
     const rankinfo = {};
     rankinfo['raceid'] = rows[i]['raceid'];
     rankinfo['racerecordid'] = rows[i]['racerecordid'];
+    rankinfo['orgring'] = rows[i]['orgring'];
     rankinfo['rank'] = rows[i]['singleranking'];
     rankinfo['arrivingtime'] = rows[i]['arrivaltime'];
 
     racerankList.push(rankinfo);
   }
-  console.log(racerankList);
+  // console.log(racerankList);
   return racerankList;
 }
 
 module.exports.searchByRaceId = function(raceId) {
-  const sql = 'select raceid,racerecordid,singleranking,arrivaltime from cloudracecertificate where raceid = $1 and singleranking IS NOT NULL and arrivaltime IS NOT NULL';
+  const sql = 'select raceid,racerecordid,orgring,singleranking,arrivaltime from cloudracecertificate where raceid = $1 and singleranking IS NOT NULL and arrivaltime IS NOT NULL';
   const params = [raceId];
 
   return new Promise(function(resolve, reject) {
@@ -38,7 +39,7 @@ module.exports.searchByRaceId = function(raceId) {
 
 
 module.exports.searchByRaceId_limitbyrank = function(raceId, rank) {
-  const sql = 'select raceid,racerecordid,singleranking,arrivaltime from cloudracecertificate where raceid = $1 and singleranking IS NOT NULL and arrivaltime IS NOT NULL';
+  const sql = 'select raceid,racerecordid,orgring,singleranking,arrivaltime from cloudracecertificate where raceid = $1 and singleranking IS NOT NULL and arrivaltime IS NOT NULL';
   const params = [raceId];
 
   return new Promise(function(resolve, reject) {
